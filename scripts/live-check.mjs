@@ -19,7 +19,7 @@ import { join } from 'node:path';
 import { autoDetect, builtinDeviceProfiles, connect, knownHostsFile, serializeXml, ssh } from '../dist/index.js';
 import { WITH_DEFAULTS_CAPABILITY, withDefaults } from '../dist/operations/with-defaults.js';
 
-const dir = process.env.NET_NETCONF_CONFIG ?? join(homedir(), '.config', '@node-net/netconf');
+const dir = process.env.NET_NETCONF_CONFIG ?? join(homedir(), '.config', 'net-netconf');
 const config = JSON.parse(await readFile(join(dir, 'live-device.json'), 'utf8'));
 const hostKey = (key) => (key === undefined || key === 'known_hosts' ? knownHostsFile() : key);
 

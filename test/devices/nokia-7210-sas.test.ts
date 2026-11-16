@@ -12,7 +12,7 @@ const fixture = (name: string): Promise<string> =>
 
 /** Host and user names from the local live-device config, if there is one. */
 async function liveDeviceNames(): Promise<string[]> {
-  const dir = process.env['NET_NETCONF_CONFIG'] ?? join(homedir(), '.config', '@node-net/netconf');
+  const dir = process.env['NET_NETCONF_CONFIG'] ?? join(homedir(), '.config', 'net-netconf');
   try {
     const c = JSON.parse(await readFile(join(dir, 'live-device.json'), 'utf8')) as Record<string, unknown> & {
       jump?: Record<string, unknown>;

@@ -4,6 +4,11 @@ export default defineConfig({
   test: {
     include: ['test/**/*.test.ts'],
     environment: 'node',
+    // CI runners (the release workflow, and check-node.sh's containers, which set
+    // CI) are slower than a developer's machine: the memory, key-decryption and
+    // namespace-scope tests take 3-6 s there. Locally the 5 s default stays, so a
+    // test that gets slow still shows up.
+    testTimeout: process.env['CI'] ? 30_000 : 5_000,
     // Used by `npm run coverage`, which this package's `check` runs in place of
     // `npm test`; `npm test` stays coverage-free. For the per-file table:
     // npm run coverage -- --coverage.reporter=text

@@ -1,0 +1,21 @@
+{
+  "$schema": "./profile.schema.json",
+  "id": "lab",
+  "vendor": "net-netconf",
+  "description": "The docs site's lab device (net-netconf-server's devices/lab), behind its TypeScript REPL and nnc terminals. The device follows the RFCs and needs no corrections: this profile only names paths for the tutorial's examples.",
+  "status": "verified",
+  "notes": [
+    "No match rule, so auto-detection never picks it: the docs site's REPL client and nnc lab target name it.",
+    "port shows a placeholder inside a quoted value (component port-eth0), and systemLeaf one as a step's name."
+  ],
+  "paths": {
+    "systemName": "/ietf-system:system/hostname",
+    "systemLeaf": "/ietf-system:system/{{leaf}}",
+    "interface": "/ietf-interfaces:interfaces/interface[name={{ifName}}]",
+    "ifDescription": "/ietf-interfaces:interfaces/interface[name={{ifName}}]/description",
+    "ifEnabled": "/ietf-interfaces:interfaces/interface[name={{ifName}}]/enabled",
+    "ocInterface": "/openconfig-interfaces:interfaces/interface[name={{ifName}}]",
+    "component": "/openconfig-platform:components/component[name={{component}}]",
+    "port": "/openconfig-platform:components/component[name=\"port-{{port}}\"]"
+  }
+}

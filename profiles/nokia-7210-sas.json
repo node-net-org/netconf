@@ -1,0 +1,47 @@
+{
+  "$schema": "./profile.schema.json",
+  "id": "nokia-7210-sas",
+  "vendor": "Nokia",
+  "description": "Nokia 7210 SAS in classic CLI mode, with the alu-conf-r13 YANG models and the CLI content layer.",
+  "status": "verified",
+  "testedWith": [
+    { "model": "7210 SAS-S 24F4SFP+-1", "version": "TiMOS B-25.9.R5" }
+  ],
+  "notes": [
+    "Verified read-only on 2026-11-07 against the device below: detection from the hello, get-config, the @systemName path, and rpc-errors read as typed RpcErrors with the session kept open. Writes through configure() are untested.",
+    "NETCONF on a classic 7210 runs CLI commands internally. The NETCONF user needs CLI access as well (configure system security user <name> access netconf ssh-cli); with only 'access netconf', every command is refused whatever the user's profile says.",
+    "The user's profile must permit 'admin' (get-config runs 'admin display-config'). Permitting 'show' is harmless but gains nothing yet.",
+    "The device advertises writable-running and no candidate datastore, so changes apply directly to running.",
+    "The device turns subtree filters into CLI commands: it enters the filter's context and runs info. A filter must stop at a CLI context: a container such as <system/>, or a list entry selected by its key such as <port><port-id>1/1/1</port-id></port>. Ending at a leaf, or at a container the CLI treats as a value (<system><name/></system>), fails with 'Leaf element specified which is not a key', even with permit-all; a list without its key (<port/>) fails as 'command failed'. So subtreeFilter 'containers' with depth 2 filters read() to /configure/<section> or a keyed entry and selects the rest locally (verified 2026-11-07).",
+    "Filtered reads need the user's profile to permit 'configure', 'back', 'info' and 'exit' as well as 'admin'. Without them they fail with 'CLI Command not allowed for this user'; set subtreeFilter 'unsupported' in a profile that extends this one to fetch the whole configuration instead.",
+    "<get> returns no state: CLI content layer (cli-show) requests return empty <data/>, and with no ietf-netconf-monitoring there is no get-schema to find the right format.",
+    "With no <get-schema>, JSON reads (the default for client.content.read() and readValue()) are converted schema-less, with a warning: values are text, and a list with one entry is not an array. The alu-conf-r13 YANG modules aren't bundled, because Nokia doesn't publish them openly. Take them from the device's software release and give their directory as yang.modules, in connect() or in a profile that extends this one. Alternatively, read with format: 'xml'.",
+    "rpc-error messages copy CLI output, including a BEL (0x07) that XML 1.0 does not allow, so the invalidXmlChars quirk strips it.",
+    "An empty container is written across two lines, as a line feed and the closing tag's indentation (<access>, 0x0A, 20 spaces, </access>, seen on 2026-11-07). The paddedEmptyElements quirk empties those, so they read as <access/>.",
+    "The hello cannot tell a 7210 from other classic-CLI SR OS devices (such as a 7750 in classic mode), so this profile matches those too. When a second classic device is verified, split out a nokia-sros-classic base and extend it.",
+    "It advertises with-defaults:1.0 with basic-mode=trim and nothing else, but rejects the <with-defaults> parameter on <get-config> (bad-element, 'Element is not valid in the specified context'), even with its own basic mode (checked read-only 2026-11-07). Reads always use trim; the capability still tells create/delete semantics."
+  ],
+  "match": {
+    "anyModule": [
+      "alu-cli-content-layer-r13"
+    ]
+  },
+  "connection": {
+    "port": 830
+  },
+  "quirks": {
+    "invalidXmlChars": "strip",
+    "paddedEmptyElements": "strip",
+    "subtreeFilter": "containers",
+    "subtreeFilterDepth": 2
+  },
+  "workflow": {
+    "editTarget": "running",
+    "lock": true,
+    "validate": false,
+    "commit": false
+  },
+  "paths": {
+    "systemName": "/alu-conf-r13:configure/system/name/system-name"
+  }
+}

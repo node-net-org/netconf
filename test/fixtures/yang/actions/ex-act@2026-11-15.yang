@@ -1,0 +1,47 @@
+module ex-act {
+  yang-version 1.1;
+  namespace "urn:example:act";
+  prefix act;
+
+  revision 2026-11-15;
+
+  container servers {
+    list server {
+      key "name";
+      leaf name {
+        type string;
+      }
+      action reset {
+        input {
+          leaf delay {
+            type uint8 {
+              range "0..60";
+            }
+          }
+        }
+        output {
+          leaf finished-at {
+            type string;
+          }
+          leaf attempts {
+            type int32;
+          }
+        }
+      }
+      action ping;
+    }
+  }
+
+  rpc restart {
+    input {
+      leaf after {
+        type uint16;
+      }
+    }
+    output {
+      leaf when {
+        type string;
+      }
+    }
+  }
+}

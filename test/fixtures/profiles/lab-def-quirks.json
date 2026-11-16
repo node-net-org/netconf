@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../profiles/profile.schema.json",
+  "id": "lab-def-quirks",
+  "description": "Lab profile for DEF, the defect server (scripts/defect-server.mjs): turns on the session quirks its scenarios provoke, so each can be seen with the quirk off (lab-def) and on (lab-def-quirks).",
+  "status": "unverified",
+  "notes": [
+    "A lab target names this profile explicitly; with no match rules, auto-detection never chooses it.",
+    "closeTimeout is 1 s, against the default 5 s, so no-close-reply shows the difference."
+  ],
+  "quirks": {
+    "replyWithoutMessageId": "oldest",
+    "closeTimeout": 1000,
+    "invalidXmlChars": "strip",
+    "paddedEmptyElements": "strip"
+  }
+}

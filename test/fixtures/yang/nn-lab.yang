@@ -1,0 +1,235 @@
+module nn-lab {
+  yang-version 1.1;
+  namespace "urn:net-netconf:lab";
+  prefix lab;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-interfaces {
+    prefix if;
+  }
+
+  organization
+    "net-netconf manual-testing lab";
+  description
+    "Constructs for exercising net-netconf and nnc by hand against
+     netopeer2 (scripts/netopeer2.sh with NETOPEER2_LAB=1). Each part names
+     the rows of the maintainers' manual-testing plan it is there for. Not a device model.";
+
+  revision 2026-11-07 {
+    description
+      "Initial revision.";
+  }
+
+  identity transport {
+    description
+      "Base for the transport identityref (C8).";
+  }
+
+  identity tcp {
+    base transport;
+  }
+
+  identity udp {
+    base transport;
+  }
+
+  augment "/if:interfaces/if:interface" {
+    description
+      "A leaf from this module inside ietf-interfaces: paths across
+       namespaces (C4).";
+    leaf lab-tag {
+      type string;
+    }
+  }
+
+  container lab {
+    description
+      "All of the lab's configuration.";
+
+    leaf name {
+      type string;
+      default "nn-lab";
+      description
+        "Defaults with nothing set: with-defaults trim, explicit and
+         report-all differ (M4, M5).";
+    }
+    leaf enabled {
+      type boolean;
+      default "true";
+    }
+    leaf mtu {
+      type uint16 {
+        range "68..9216";
+      }
+      default "1500";
+      description
+        "Out of range is an invalid-value error (S5).";
+    }
+    leaf timeout {
+      type union {
+        type uint32;
+        type enumeration {
+          enum never;
+        }
+      }
+    }
+    leaf transport {
+      type identityref {
+        base transport;
+      }
+      description
+        "Identityref values and their prefixes (C8).";
+    }
+    leaf uplink {
+      type if:interface-ref;
+      description
+        "A leafref into ietf-interfaces: an unknown name fails validate (X2).";
+    }
+    leaf-list dns-server {
+      type inet:ip-address;
+      ordered-by user;
+      description
+        "An ordered-by user leaf-list (O9).";
+    }
+    list rule {
+      key "name";
+      ordered-by user;
+      description
+        "An ordered-by user list: yang:insert first / last / before / after (O9).";
+      leaf name {
+        type string;
+      }
+      leaf action {
+        type enumeration {
+          enum permit;
+          enum deny;
+        }
+        mandatory true;
+      }
+      leaf-list port {
+        type inet:port-number;
+      }
+    }
+    list route {
+      key "prefix next-hop";
+      description
+        "A composite key.";
+      leaf prefix {
+        type inet:ip-prefix;
+      }
+      leaf next-hop {
+        type inet:ip-address;
+      }
+      leaf metric {
+        type uint8 {
+          range "1..255";
+        }
+        default "10";
+      }
+    }
+    container address {
+      choice source {
+        description
+          "Setting one case removes the other.";
+        case static {
+          leaf ip {
+            type inet:ip-address;
+          }
+        }
+        case dhcp {
+          leaf dhcp {
+            type empty;
+          }
+        }
+      }
+    }
+    container logging {
+      presence "Logging is on.";
+      description
+        "A presence container. Creating it without server fails on the
+         mandatory leaf; port exists only when server is set (when).";
+      leaf server {
+        type inet:host;
+        mandatory true;
+      }
+      leaf port {
+        when "../server";
+        type inet:port-number;
+        default "514";
+      }
+      leaf level {
+        type enumeration {
+          enum debug;
+          enum info;
+          enum warning;
+          enum error;
+        }
+        default "info";
+      }
+    }
+    container limits {
+      description
+        "must constraints. Setting min 10, max 5 and warn 50 breaks two
+         at once, for several errors in one reply (S6), an edit that
+         fails validate (O14, X2) and error-option rollback (O8).";
+      leaf min {
+        type uint32;
+        default "0";
+      }
+      leaf max {
+        type uint32;
+        default "100";
+        must ". >= ../min" {
+          error-message "max must not be less than min";
+          error-app-tag "lab-max-below-min";
+        }
+      }
+      leaf warn {
+        type uint32;
+        must ". <= ../max" {
+          error-message "warn must not be more than max";
+          error-app-tag "lab-warn-above-max";
+        }
+      }
+    }
+    list user {
+      key "name";
+      description
+        "A password leaf, redacted in traces (L4).";
+      leaf name {
+        type string;
+      }
+      leaf password {
+        type string;
+      }
+      action reset-password {
+        description
+          "An action with no handler installed: calling it shows the
+           server's error for an unhandled action.";
+        input {
+          leaf password {
+            type string;
+          }
+        }
+      }
+    }
+    list entry {
+      key "id";
+      description
+        "Seeded with many entries by scripts/netopeer2.sh: a reply long
+         enough to page (N9) and to hit maxMessageBytes (F3).";
+      leaf id {
+        type uint32;
+      }
+      leaf description {
+        type string;
+      }
+    }
+    anydata extra {
+      description
+        "Any XML.";
+    }
+  }
+}

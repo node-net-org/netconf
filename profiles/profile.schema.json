@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/node-net-org/netconf/profiles/profile.schema.json",
+  "title": "net-netconf device profile",
+  "description": "Describes how a kind of NETCONF device differs from the RFCs and what it offers beyond them. See docs/net-netconf-design.md §6.4.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id"],
+  "if": { "not": { "required": ["extends"] } },
+  "then": {
+    "properties": {
+      "operations": { "additionalProperties": { "required": ["request"] } }
+    }
+  },
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "description": "Unique profile id: lowercase letters, digits, '.', '_' or '-'.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "extends": {
+      "description": "Id of a profile to inherit from. Each section is merged key by key. A child operation with a request replaces the inherited one; without a request it changes only the fields it gives (such as mutates).",
+      "type": "string"
+    },
+    "vendor": { "type": "string" },
+    "description": { "type": "string" },
+    "status": {
+      "description": "'verified' once tested against a real device (record it in testedWith).",
+      "enum": ["verified", "unverified"]
+    },
+    "testedWith": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["model", "version"],
+        "properties": { "model": { "type": "string" }, "version": { "type": "string" } }
+      }
+    },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "match": {
+      "description": "Detection rules for autoDetect(). All given groups must match.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "anyCapability": {
+          "description": "Any of these capability URIs (query ignored). A trailing * matches a prefix.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "anyModule": { "description": "Any of these YANG modules advertised.", "type": "array", "items": { "type": "string" } },
+        "allModules": { "description": "All of these YANG modules advertised.", "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "connection": {
+      "description": "Connection defaults. Spread into ssh(): ssh({ ...profile.connection, host, ... }).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "subsystem": { "type": "string" },
+        "command": { "type": "string" },
+        "keepaliveInterval": { "type": "integer", "minimum": 0 },
+        "keepaliveCountMax": { "type": "integer", "minimum": 0 },
+        "algorithms": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kex": { "type": "array", "items": { "type": "string" } },
+            "serverHostKey": { "type": "array", "items": { "type": "string" } },
+            "cipher": { "type": "array", "items": { "type": "string" } },
+            "hmac": { "type": "array", "items": { "type": "string" } },
+            "compress": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "quirks": {
+      "description": "Named deviations from the RFCs, each implemented and tested in core.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxInFlight": { "description": "Most RPCs in flight. 1 if the device mishandles pipelining.", "type": "integer", "minimum": 1 },
+        "forceBaseVersion": { "description": "Advertise only base:1.0.", "enum": ["1.0"] },
+        "replyWithoutMessageId": {
+          "description": "'oldest' matches an <rpc-reply> without message-id to the oldest pending RPC.",
+          "enum": ["strict", "oldest"]
+        },
+        "closeTimeout": { "description": "Milliseconds to wait for the <close-session> reply (at least 1).", "type": "integer", "minimum": 1 },
+        "invalidXmlChars": {
+          "description": "'strip' removes characters XML 1.0 does not allow (such as a BEL copied from CLI output) from received messages before parsing. 'reject' (default) treats them as malformed XML.",
+          "enum": ["reject", "strip"]
+        },
+        "paddedEmptyElements": {
+          "description": "'strip' empties elements whose only content is whitespace containing a line break, for devices that write an empty element across two lines (<access>, newline, indentation, </access>). Whitespace without a line break, and any text with a visible character, is kept. 'keep' (default) treats that whitespace as the element's value.",
+          "enum": ["keep", "strip"]
+        },
+        "subtreeFilter": {
+          "description": "'unsupported' makes path reads fetch the whole datastore without a filter and select the path locally, for devices that reject or mistranslate subtree filters. 'containers' sends a filter cut short at subtreeFilterDepth and selects the rest of the path locally, for devices that accept filters only down to certain levels. 'supported' (default) sends a subtree filter for the whole path.",
+          "enum": ["supported", "unsupported", "containers"]
+        },
+        "subtreeFilterDepth": {
+          "description": "Required with subtreeFilter 'containers', and only used with it. The filter keeps the first subtreeFilterDepth steps of the path, then any keyed list entries right after them, and stops at the first step without keys past that.",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "capabilities": {
+      "description": "Correct what the device advertises.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "add": { "type": "array", "items": { "type": "string" } },
+        "remove": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "workflow": {
+      "description": "How Session.configure() applies changes on this device.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "editTarget": { "enum": ["running", "candidate"] },
+        "lock": { "type": "boolean" },
+        "validate": { "type": "boolean" },
+        "commit": { "type": "boolean" }
+      }
+    },
+    "namespaces": {
+      "description": "Module name to namespace, for modules the device uses but doesn't advertise.",
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "paths": {
+      "description": "Named YANG paths, usable as @name wherever a path is accepted. A path may hold {{param}} placeholders, filled in as @name(value, param=value). More of the path may follow: @name(value)/leaf. A placeholder that is a predicate's whole value ([name={{ifName}}]) is quoted for you, and a read may leave it out to select every entry; set, remove and configure need every parameter. A placeholder anywhere else (part of a quoted value, or a step's name) must always be given.",
+      "type": "object",
+      "propertyNames": { "pattern": "^[^()/@][^()/]*$" },
+      "additionalProperties": { "type": "string", "pattern": "^/" }
+    },
+    "yang": {
+      "description": "Optional. YANG schemas for RFC 7951 JSON output (format: 'json').",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "modules": {
+          "description": "Directories of YANG modules (module.yang or module@revision.yang) the device uses but can't serve with <get-schema>, relative to this file.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "requireSchema": {
+          "description": "Refuse to convert data without a YANG schema, instead of converting it schema-less with a warning. The connection and each call can override it.",
+          "type": "boolean"
+        }
+      }
+    },
+    "operations": {
+      "description": "The device's own operations, as XML templates. Run one with client.ops.device.call(name, params) or client.ops.run(name, params).",
+      "type": "object",
+      "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "description": { "type": "string" },
+          "mutates": {
+            "description": "Whether the operation can change device state. Left out, it counts as possibly changing state, so tools treat it as a write (for example, refusing it on a read-only device). Set false only for operations that only read.",
+            "type": "boolean"
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": { "enum": ["string", "number", "boolean", "string?", "number?", "boolean?"] }
+          },
+          "request": {
+            "description": "The operation element. {{param}} may be a whole text node or attribute value; parameters are always escaped.",
+            "type": "string"
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": { "description": "'/'-separated element names, relative to <rpc-reply>.", "type": "string" },
+              "as": { "enum": ["text", "element", "object", "reply"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

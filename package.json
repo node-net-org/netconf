@@ -1,0 +1,138 @@
+{
+  "name": "@node-net/netconf",
+  "version": "0.1.0",
+  "description": "Modern, RFC-compliant NETCONF client for Node.js, with pluggable device profiles",
+  "keywords": [
+    "netconf",
+    "yang",
+    "network",
+    "ssh",
+    "rfc6241",
+    "rfc6242",
+    "network-automation"
+  ],
+  "author": "Mark Abrahams <mark@abrahams.co.nz>",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/node-net-org/netconf.git"
+  },
+  "homepage": "https://net-netconf.abrahams.nz",
+  "bugs": {
+    "url": "https://github.com/node-net-org/netconf/issues"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "default": "./dist/core.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
+    },
+    "./operations/base-notifications": {
+      "types": "./dist/operations/base-notifications.d.ts",
+      "default": "./dist/operations/base-notifications.js"
+    },
+    "./operations/compare": {
+      "types": "./dist/operations/compare.d.ts",
+      "default": "./dist/operations/compare.js"
+    },
+    "./operations/monitoring": {
+      "types": "./dist/operations/monitoring.d.ts",
+      "default": "./dist/operations/monitoring.js"
+    },
+    "./operations/notifications": {
+      "types": "./dist/operations/notifications.d.ts",
+      "default": "./dist/operations/notifications.js"
+    },
+    "./operations/nmda": {
+      "types": "./dist/operations/nmda.d.ts",
+      "default": "./dist/operations/nmda.js"
+    },
+    "./operations/yang-library": {
+      "types": "./dist/operations/yang-library.d.ts",
+      "default": "./dist/operations/yang-library.js"
+    },
+    "./operations/partial-lock": {
+      "types": "./dist/operations/partial-lock.d.ts",
+      "default": "./dist/operations/partial-lock.js"
+    },
+    "./operations/subscriptions": {
+      "types": "./dist/operations/subscriptions.d.ts",
+      "default": "./dist/operations/subscriptions.js"
+    },
+    "./operations/with-defaults": {
+      "types": "./dist/operations/with-defaults.d.ts",
+      "default": "./dist/operations/with-defaults.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.tsbuildinfo",
+    "profiles"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "rm -rf dist && node scripts/gen-builtin-profiles.mjs && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "layers": "depcruise src --config .dependency-cruiser.cjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "smoke:require": "node scripts/require-smoke.cjs",
+    "live:check": "npm run build && node scripts/live-check.mjs",
+    "check": "npm run lint && npm run typecheck && npm run layers && npm run coverage && npm run build && npm run smoke:require && npm run portable:check && npm run size:check && npm run pack:check && npm run names:check && npm run audit:runtime",
+    "portable:check": "node scripts/portable-check.mjs",
+    "size": "node scripts/size-core.mjs",
+    "size:check": "node scripts/size-core.mjs --check",
+    "bench:framing": "npm run build && node scripts/bench-framing.mjs",
+    "bench:parse": "npm run build && node scripts/bench-parse.mjs",
+    "test:integration": "NETOPEER2_PORT=${NETOPEER2_PORT:-18300} vitest run --no-file-parallelism test/integration",
+    "prepublishOnly": "node scripts/check-published-deps.mjs",
+    "pack:check": "node scripts/pack-check.cjs",
+    "names:check": "node scripts/export-names-check.mjs",
+    "check:full": "scripts/check-full.sh",
+    "audit:runtime": "node scripts/audit-runtime.mjs",
+    "deps:report": "node scripts/deps-report.mjs",
+    "lab:def": "node scripts/defect-server.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@rgrove/parse-xml": "^5.1.0",
+    "@types/node": "^22.20.5",
+    "@types/ssh2": "^1.15.6",
+    "@vitest/coverage-v8": "^5.1.0",
+    "ajv": "^8.20.0",
+    "dependency-cruiser": "^18.7.2",
+    "eslint": "^10.14.0",
+    "fast-check": "^4.10.2",
+    "globals": "^17.14.0",
+    "rolldown": "^1.2.16",
+    "typescript": "~6.0",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "@node-net/yang": "^0.1.0",
+    "ssh2": "^1.17.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "allowScripts": {
+    "ssh2@1.17.0": true,
+    "cpu-features@0.0.10": true
+  }
+}

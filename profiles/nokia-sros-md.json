@@ -1,0 +1,25 @@
+{
+  "$schema": "./profile.schema.json",
+  "id": "nokia-sros-md",
+  "vendor": "Nokia",
+  "description": "Nokia SR OS in model-driven (or mixed) management mode, with the nokia-conf/nokia-state YANG models.",
+  "status": "unverified",
+  "notes": [
+    "Written from Nokia documentation, not yet tested against a device.",
+    "Configuration goes through the global candidate datastore and needs a commit."
+  ],
+  "match": { "anyModule": ["nokia-conf"] },
+  "connection": { "port": 830 },
+  "workflow": { "editTarget": "candidate", "lock": true, "validate": true, "commit": true },
+  "paths": {
+    "systemName": "/nokia-conf:configure/system/name"
+  },
+  "operations": {
+    "cli": {
+      "description": "Run an MD-CLI command and return its text output.",
+      "params": { "command": "string" },
+      "request": "<md-cli-raw-command xmlns=\"urn:nokia.com:sros:ns:yang:sr:oper-global\"><md-cli-input-line>{{command}}</md-cli-input-line></md-cli-raw-command>",
+      "result": { "path": "md-cli-output-block", "as": "text" }
+    }
+  }
+}

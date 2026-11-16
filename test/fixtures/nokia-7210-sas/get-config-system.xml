@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:alu="urn:alcatel-lucent.com:sros:ns:yang:conf-r13" message-id="1"><data><alu:configure><alu:system><alu:name><alu:system-name>router1</alu:system-name></alu:name><alu:dns>
+                </alu:dns><alu:resource-profile><alu:ingress-internal-tcam><alu:qos-sap-ingress-resource><alu:num-resources>4</alu:num-resources></alu:qos-sap-ingress-resource><alu:acl-sap-ingress><alu:num-resources>3</alu:num-resources></alu:acl-sap-ingress><alu:eth-cfm><alu:num-resources>1</alu:num-resources><alu:down-mep><alu:num-resources>1</alu:num-resources></alu:down-mep></alu:eth-cfm></alu:ingress-internal-tcam><alu:egress-internal-tcam>
+                    </alu:egress-internal-tcam><alu:router><alu:max-ipv6-routes><alu:number>500</alu:number></alu:max-ipv6-routes></alu:router></alu:resource-profile></alu:system></alu:configure></data></rpc-reply>

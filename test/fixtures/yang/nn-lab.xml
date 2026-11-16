@@ -1,0 +1,14 @@
+<lab xmlns="urn:net-netconf:lab">
+  <!-- name, enabled and mtu are left at their defaults. -->
+  <transport>tcp</transport>
+  <uplink>eth0</uplink>
+  <dns-server>192.0.2.53</dns-server>
+  <dns-server>198.51.100.53</dns-server>
+  <rule><name>ssh</name><action>permit</action><port>22</port></rule>
+  <rule><name>netconf</name><action>permit</action><port>830</port><port>6513</port></rule>
+  <rule><name>default</name><action>deny</action></rule>
+  <route><prefix>0.0.0.0/0</prefix><next-hop>192.0.2.254</next-hop></route>
+  <route><prefix>198.51.100.0/24</prefix><next-hop>192.0.2.254</next-hop><metric>20</metric></route>
+  <address><ip>192.0.2.1</ip></address>
+  <user><name>operator</name><password>lab-only-not-secret</password></user>
+</lab>

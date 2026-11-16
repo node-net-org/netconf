@@ -1,0 +1,25 @@
+<interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"
+            xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">
+  <!-- enabled left out on eth0 and lo: its default (true) shows the with-defaults modes. -->
+  <interface>
+    <name>eth0</name>
+    <description>lab uplink</description>
+    <type>ianaift:ethernetCsmacd</type>
+    <lab-tag xmlns="urn:net-netconf:lab">uplink</lab-tag>
+    <ipv4 xmlns="urn:ietf:params:xml:ns:yang:ietf-ip">
+      <address>
+        <ip>192.0.2.1</ip>
+        <prefix-length>24</prefix-length>
+      </address>
+    </ipv4>
+  </interface>
+  <interface>
+    <name>eth1</name>
+    <type>ianaift:ethernetCsmacd</type>
+    <enabled>false</enabled>
+  </interface>
+  <interface>
+    <name>lo</name>
+    <type>ianaift:softwareLoopback</type>
+  </interface>
+</interfaces>

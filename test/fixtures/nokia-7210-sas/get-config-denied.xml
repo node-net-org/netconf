@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc-reply message-id="1" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+    <rpc-error>
+        <error-type>application</error-type>
+        <error-tag>operation-failed</error-tag>
+        <error-severity>error</error-severity>
+        <error-info>
+            <err-element>get-config</err-element>
+        </error-info>
+        <error-message>
+            command failed - '/admin display-config'
+            MINOR: CLI Command not allowed for this user.
+        </error-message>
+    </rpc-error>
+</rpc-reply>

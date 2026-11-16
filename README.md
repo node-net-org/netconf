@@ -2,7 +2,7 @@
 
 A modern, RFC-compliant NETCONF client for Node.js, written in TypeScript.
 
-**📖 Documentation: [net-netconf.abrahams.nz](https://net-netconf.abrahams.nz)**
+**📖 Documentation: [netconf.node-net.org](https://netconf.node-net.org)**
 
 > **Status: early development (0.x).** The protocol stack (RFC 6241/6242), the SSH and TLS transports, all base operations, the YANG path API, JSON device profiles and the extensions below work, and are tested against netopeer2. The API may still change before 1.0.
 
@@ -73,7 +73,7 @@ await client.content.read(IF);                          // RFC 7951 JSON: { 'iet
 await client.content.set(`${IF}/description`, 'uplink'); // lock, edit, validate, commit, unlock; discards on failure
 ```
 
-Next: [getting started](https://net-netconf.abrahams.nz/guide/getting-started), [connecting](https://net-netconf.abrahams.nz/guide/connecting) (SSH keys and agents, jump hosts, TLS), and [Content](https://net-netconf.abrahams.nz/guide/content) (reading and writing by YANG path).
+Next: [getting started](https://netconf.node-net.org/guide/getting-started), [connecting](https://netconf.node-net.org/guide/connecting) (SSH keys and agents, jump hosts, TLS), and [Content](https://netconf.node-net.org/guide/content) (reading and writing by YANG path).
 
 ## Device profiles
 
@@ -94,7 +94,7 @@ await client.content.readValue('@systemName'); // a named path from the profile
 | `nokia-sros-md` | Nokia SR OS, model-driven or mixed mode | unverified |
 | `sysrepo-netopeer2` | netopeer2 on sysrepo | verified |
 
-To add a device, see [writing a profile](https://net-netconf.abrahams.nz/profiles/writing). Contributions are welcome.
+To add a device, see [writing a profile](https://netconf.node-net.org/profiles/writing). Contributions are welcome.
 
 ## Extensions
 
@@ -109,22 +109,22 @@ await client.ops.getConfig({ withDefaults: 'report-all' });
 
 | Extension | RFC |
 |---|---|
-| [`monitoring`](https://net-netconf.abrahams.nz/guide/extensions#monitoring) | 6022 |
-| [`with-defaults`](https://net-netconf.abrahams.nz/guide/extensions#with-defaults) | 6243 |
-| [`nmda`](https://net-netconf.abrahams.nz/guide/extensions#nmda) | 8342, 8526 |
-| [`yang-library`](https://net-netconf.abrahams.nz/guide/extensions#yang-library) | 8525, 7895 |
-| [`compare`](https://net-netconf.abrahams.nz/guide/extensions#compare) | 9144 |
-| [`partial-lock`](https://net-netconf.abrahams.nz/guide/extensions#partial-lock) | 5717 |
-| [`notifications`](https://net-netconf.abrahams.nz/guide/notifications) | 5277 |
-| [`subscriptions`](https://net-netconf.abrahams.nz/guide/notifications#rfc-8639-subscriptions-and-yang-push) (with YANG-Push, and RFC 9196 capabilities) | 8639, 8640, 8641, 9196 |
+| [`monitoring`](https://netconf.node-net.org/guide/extensions#monitoring) | 6022 |
+| [`with-defaults`](https://netconf.node-net.org/guide/extensions#with-defaults) | 6243 |
+| [`nmda`](https://netconf.node-net.org/guide/extensions#nmda) | 8342, 8526 |
+| [`yang-library`](https://netconf.node-net.org/guide/extensions#yang-library) | 8525, 7895 |
+| [`compare`](https://netconf.node-net.org/guide/extensions#compare) | 9144 |
+| [`partial-lock`](https://netconf.node-net.org/guide/extensions#partial-lock) | 5717 |
+| [`notifications`](https://netconf.node-net.org/guide/notifications) | 5277 |
+| [`subscriptions`](https://netconf.node-net.org/guide/notifications#rfc-8639-subscriptions-and-yang-push) (with YANG-Push, and RFC 9196 capabilities) | 8639, 8640, 8641, 9196 |
 
-Two helpers sit beside them and aren't passed to `extensions`: [`base-notifications`](https://net-netconf.abrahams.nz/guide/notifications#base-notifications-rfc-6470) (RFC 6470) decodes the base notifications, and [`withCandidate()`](https://net-netconf.abrahams.nz/guide/transactions), imported from `@node-net/netconf`, runs a locked candidate transaction (RFC 6241) with cleanup.
+Two helpers sit beside them and aren't passed to `extensions`: [`base-notifications`](https://netconf.node-net.org/guide/notifications#base-notifications-rfc-6470) (RFC 6470) decodes the base notifications, and [`withCandidate()`](https://netconf.node-net.org/guide/transactions), imported from `@node-net/netconf`, runs a locked candidate transaction (RFC 6241) with cleanup.
 
-Also: [call home](https://net-netconf.abrahams.nz/guide/call-home) (RFC 8071), a [fake server for your tests](https://net-netconf.abrahams.nz/guide/testing), and the [framed message channel](https://net-netconf.abrahams.nz/guide/low-level) for protocol tools. See [RFC support](https://net-netconf.abrahams.nz/rfc-support) for the full list.
+Also: [call home](https://netconf.node-net.org/guide/call-home) (RFC 8071), a [fake server for your tests](https://netconf.node-net.org/guide/testing), and the [framed message channel](https://netconf.node-net.org/guide/low-level) for protocol tools. See [RFC support](https://netconf.node-net.org/rfc-support) for the full list.
 
 ## The CLI
 
-`nnc` is an interactive NETCONF client for watching the protocol: it sends operations, traces bytes, frames or XML, connects to production devices read-only, and runs scripts with exit codes. It's the [`@node-net/nnc`](https://github.com/node-net-org/nnc) package. See [the CLI docs](https://net-netconf.abrahams.nz/cli/).
+`nnc` is an interactive NETCONF client for watching the protocol: it sends operations, traces bytes, frames or XML, connects to production devices read-only, and runs scripts with exit codes. It's the [`@node-net/nnc`](https://github.com/node-net-org/nnc) package. See [the CLI docs](https://netconf.node-net.org/cli/).
 
 ## Development
 
@@ -174,7 +174,7 @@ There is no CI for changes: what gates a change is these checks, run locally bef
 ### Documentation
 
 - [docs/](docs/) holds the maintainer notes: the [design](docs/net-netconf-design.md), the [RFC survey](docs/rfcs/rfcs.md), and the plan for [integrating @node-net/yang](docs/net-yang-integration-plan.md), now historical.
-- The documentation site, [net-netconf.abrahams.nz](https://net-netconf.abrahams.nz), is built from its own repository. Its API reference comes from this package's TSDoc comments.
+- The documentation site, [netconf.node-net.org](https://netconf.node-net.org), is built from its own repository. Its API reference comes from this package's TSDoc comments.
 
 ## Licence
 
